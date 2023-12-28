@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardMapper">
+
+<!-- 사원 추가 -->
+<insert id="insert">
+INSERT INTO employees(
+						employee_id,
+						name,
+						email,
+						phone_number,
+						hire_date,
+						leave_date,
+						department_id,
+						address,
+						reg_no,
+						bank_id,
+						bank_account
+					)
+			VALUES(
+						employees_seq.NEXTVAL,
+						#{name},
+						#{email},
+						#{phone_number},
+						#{hire_date},
+						#{leave_date, jdbcType=VARCHAR},
+						#{department_id},
+						#{address},
+						#{reg_no},
+						#{bank_id},
+						#{bank_account}
+					)
+
+</insert>
+
+	<resultMap id="boardVoResultMap" type="com.mycompany.personnel.vo.BoardVO">
+		<id property="employee_id" column="employee_id"/>
+		<result property="name" column="name"/>
+		<result property="email" column="email"/>
+		<result property="phone_number" column="phone_number"/>
+		<result property="hire_date" column="hire_date"/>
+		<result property="leave_date" column="leave_date"/>
+		<result property="department_id" column="department_id"/>
+		<result property="address" column="address"/>
+		<result property="reg_no" column="reg_no"/>
+		<result property="bank_id" column="bank_id"/>
+		<result property="bank_account" column="bank_account"/>	
+		<association property="deptVO" resultMap="deptResultMap"/>
+	</resultMap>
+	
+	<resultMap id="deptResultMap" type="com.mycompany.personnel.vo.DeptVO">
+		<id property="department_id" column="department_id"/>
+		<result property="dept_name" column="department_name"/>
+	</resultMap>
+
+<!-- 사원 조회 -->
+<select id="list" resultType="com.mycompany.personnel.vo.BoardVO" parameterType="com.mycompany.personnel.vo.SearchCriteria">
+SELECT employee_id,
+       name,
+       reg_no,
+       department_name AS dept_name,
+       hire_date,
+       leave_date,
+       email
+FROM (
+		SELECT e.*, d.department_name, ROW_NUMBER() OVER(ORDER BY e.employee_id DESC) as RNUM
+		FROM	employees e
+		LEFT JOIN departments d ON e.department_id = d.department_id
+		WHERE 1=1
+			<include refid="search"></include>
+	) emp
+WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+ORDER BY employee_id DESC
+</select>
+
+<!-- 총 사원 수 -->
+	<select id="listCount" parameterType="com.mycompany.personnel.vo.SearchCriteria" resultType="int">
+		SELECT COUNT(employee_id)
+		FROM   employees
+		WHERE  1=1
+			<include refid="search"></include>
+		AND employee_id > 0
+	</select>
+	
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 'on'.toString()">AND hire_date IS NOT NULL AND leave_date IS NULL AND name LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'off'.toString()">AND leave_date IS NOT NULL AND name LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'all'.toString()">AND name LIKE '%' || #{keyword} || '%'</if>
+		</if>
+	</sql>
+
+<!-- 직원 정보 선택삭제 -->
+	<delete id="delete" parameterType="java.util.List">
+		DELETE  FROM  employees
+		<where>
+			employee_id IN
+			<foreach collection="list" item="id" separator="," open="(" close=")">
+				#{id}
+			</foreach>
+		</where>
+	</delete>
+
+	<!-- 직원 정보 수정 -->
+	<update id="update" parameterType="com.mycompany.personnel.vo.BoardVO">
+		UPDATE	employees
+		   SET	name = #{name},
+		   		email = #{email},
+		   		phone_number = #{phone_number},
+		   		hire_date = #{hire_date},
+		   		leave_date = #{leave_date},
+		   		department_id = #{department_id},
+		   		address = #{address},
+		   		reg_no = #{reg_no},
+		   		bank_id = #{bank_id},
+		   		bank_account = #{bank_account}  
+		WHERE 	employee_id = #{employee_id}
+	</update>
+
+
+
+
+
+<!-- 부서 목록 -->
+<select id="dept" resultType="com.mycompany.personnel.vo.DeptVO">
+
+SELECT	department_id,
+		department_name AS dept_name
+FROM departments ORDER BY department_id
+
+
+</select>
+
+
+
+
+<!-- 은행 목록 -->
+<select id="bank" resultType="com.mycompany.personnel.vo.BankVO">
+
+SELECT	*
+FROM banks ORDER BY bank_id
+
+
+</select>
+
+</mapper>
