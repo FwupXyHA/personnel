@@ -18,13 +18,9 @@ public class BoardServiceImpl implements BoardService {
 	@Inject
 	private BoardDAO dao;
 	
-	private DeptService deptService;
-	private BankService bankService;
-	
 	@Inject
-	public BoardServiceImpl(DeptService deptService, BankService bankService) {
-        this.deptService = deptService;
-        this.bankService = bankService;
+	public BoardServiceImpl(BoardDAO dao) {
+		this.dao = dao;
     }
 	
 	// 사원 추가
@@ -50,12 +46,12 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public List<DeptVO> getAllDepts() {
-		return deptService.getAllDepts();
+		return dao.getAllDepts();
 	}
 
 	@Override
 	public List<BankVO> getAllBanks() {
-		return bankService.getAllBanks();
+		return dao.getAllBanks();
 	}
 	
 	

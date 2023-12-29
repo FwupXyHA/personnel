@@ -7,7 +7,9 @@ import javax.inject.Inject;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import com.mycompany.personnel.vo.BankVO;
 import com.mycompany.personnel.vo.BoardVO;
+import com.mycompany.personnel.vo.DeptVO;
 import com.mycompany.personnel.vo.SearchCriteria;
 
 @Repository
@@ -35,5 +37,15 @@ public class BoardDAOImpl implements BoardDAO {
 	}
 	
 	
-
+    // 은행 목록 조회
+    @Override
+    public List<BankVO> getAllBanks() {
+        return sqlSession.selectList("boardMapper.bank");
+    }
+    
+    // 부서 목록 조회
+    @Override
+    public List<DeptVO> getAllDepts() {
+        return sqlSession.selectList("boardMapper.dept");
+    }
 }

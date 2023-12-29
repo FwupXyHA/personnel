@@ -2,7 +2,9 @@ package com.mycompany.personnel.dao;
 
 import java.util.List;
 
+import com.mycompany.personnel.vo.BankVO;
 import com.mycompany.personnel.vo.BoardVO;
+import com.mycompany.personnel.vo.DeptVO;
 import com.mycompany.personnel.vo.SearchCriteria;
 
 public interface BoardDAO {
@@ -18,6 +20,7 @@ public interface BoardDAO {
 	
 
 
-	
+	List<BankVO> getAllBanks();
+	List<DeptVO> getAllDepts();
 	
 }

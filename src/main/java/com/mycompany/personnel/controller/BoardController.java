@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.mycompany.personnel.service.BankService;
 import com.mycompany.personnel.service.BoardService;
-import com.mycompany.personnel.service.DeptService;
 import com.mycompany.personnel.vo.BankVO;
 import com.mycompany.personnel.vo.BoardVO;
 import com.mycompany.personnel.vo.DeptVO;
@@ -28,20 +26,16 @@ public class BoardController {
 			LoggerFactory.getLogger(BoardController.class);
 	
 	
-	private final DeptService deptService;
-	private final BankService bankService;
 	private final BoardService boardService;
 	
 	@Autowired
-	public BoardController(DeptService deptService, BankService bankService, BoardService boardService) {
-		this.deptService = deptService;
-		this.bankService = bankService;
+	public BoardController(BoardService boardService) {
 		this.boardService = boardService;
 	}
 	
 	@RequestMapping(value = "/depts", method = RequestMethod.GET)
 	public String getAllDepts(Model model) {
-		List<DeptVO> depts = deptService.getAllDepts();
+		List<DeptVO> depts = boardService.getAllDepts();
 		model.addAttribute("depts", depts);
 		return "board/depts";
 	}
@@ -49,7 +43,7 @@ public class BoardController {
 	
 	@RequestMapping(value = "/banks", method = RequestMethod.GET)
 	public String getAllBanks(Model model) {
-		List<BankVO> banks = bankService.getAllBanks();
+		List<BankVO> banks = boardService.getAllBanks();
 		model.addAttribute("banks", banks);
 		return "board/banks";
 	}
@@ -60,8 +54,8 @@ public class BoardController {
 	public String registerView(Model model) throws Exception {
 		logger.info("registerView");
 		
-		List<DeptVO> depts = deptService.getAllDepts();
-		List<BankVO> banks = bankService.getAllBanks();
+		List<DeptVO> depts = boardService.getAllDepts();
+		List<BankVO> banks = boardService.getAllBanks();
 
 	    model.addAttribute("depts", depts);
 	    model.addAttribute("banks", banks);
